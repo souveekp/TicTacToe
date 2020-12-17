@@ -7,10 +7,14 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.border.Border;
 
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.*;
 import java.awt.Dimension;
 public class GameLogic extends GameGUI{
@@ -18,11 +22,35 @@ public class GameLogic extends GameGUI{
 	String currPlayer;
 	boolean hasWinner;
 	int count = 0;
-	
-	// void getPlayerDetails(){
-	// 	p1.setName("Player 1");
-	// 	p2.setName("Player 2");
-	// }
+	Player p1;
+	Player p2;
+	String score;//For JLabel
+	void getPlayerDetails(){
+		p1 = new Player();
+		p2 = new Player();
+
+		String player1Name = (String)JOptionPane.showInputDialog(
+			pane,
+			"Enter Player 1 Name", 
+            "Player Names",            
+            JOptionPane.PLAIN_MESSAGE
+            );
+		if(player1Name == null || player1Name.equals(""))
+			player1Name = "Player1";
+
+		String player2Name = (String)JOptionPane.showInputDialog(
+			pane,
+			"Enter Player 2 Name", 
+			"Player Names",            
+			JOptionPane.PLAIN_MESSAGE
+            );
+		if(player2Name == null || player2Name.equals(""))
+			player2Name = "Player2";
+
+		p1.setName(player1Name);
+		p2.setName(player2Name);
+		initializeGame();
+	}
 
 	void initializeGame(){
 		currPlayer = "X";
@@ -32,10 +60,11 @@ public class GameLogic extends GameGUI{
 				JButton button = new JButton();
 				board[i][j] = button;
 				button.setBackground(Color.white);
+				// setVisible(true);
 				button.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent ae){
 						
-						// System.out.println("Outside if count = "+count);
+						System.out.println("Player Names-->"+p1.getName()+p1.getScore()+"<--this is-->"+p2.getName()+p2.getScore());
 						// System.out.println("Player Name"+p1.getName());
 						// System.out.println("Player Name"+p2.getName());
 						if((((JButton)ae.getSource()).getText()).equals("") && hasWinner == false){
@@ -52,22 +81,38 @@ public class GameLogic extends GameGUI{
 						}
 					}
 				});
-				// count ++;
 				pane.add(button);
 			}
 		}
+
 		initializeResetQuit();
+
 	}
 
 	void initializeResetQuit(){
-		panel = new JPanel();
-		
-		reset = new JButton("Reset Game");
-		// reset.setBounds(0,0,200,20);
-		reset.setBackground(Color.gray);
-		reset.addActionListener(new ActionListener(){
+		Border blackline = BorderFactory.createLineBorder(Color.black);
+		panel1 = new JPanel();
+		panel2 = new JPanel();
+		panel3 = new JPanel();
+
+		panel3.setBorder(blackline);
+
+		label = new JLabel();
+		resetBoard = new JButton("Reset Board");
+
+		resetBoard.setBackground(Color.gray);
+		resetBoard.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
 				resetGame();
+			}
+		});
+
+		resetScore = new JButton("Reset Score");
+
+		resetScore.setBackground(Color.gray);
+		resetScore.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				resetScore();
 			}
 		});
 
@@ -78,30 +123,24 @@ public class GameLogic extends GameGUI{
 				quitGame();
 			}
 		});
+		score = "<html>Scores<br>"+p1.getName()+"--"+p1.getScore()+"<br>"+p2.getName()+"--"+p2.getScore();
+		System.out.println("This is for the label"+score);
+		label.setText(score);
+		label.setFont(new Font("Serif", Font.PLAIN, 24));
 
-		reset.setPreferredSize(new Dimension(130, 40));
-		panel.add(reset);
-		
+		resetBoard.setPreferredSize(new Dimension(130, 40));
+		resetScore.setPreferredSize(new Dimension(130, 40));
+		panel1.add(resetBoard);
+		panel1.add(resetScore);
 		quit.setPreferredSize(new Dimension(130, 40));
-		// quit.setLocation(10000,0);
-		panel.add(quit);
-
-		pane.add(panel);
+		panel2.add(quit);
+		panel3.add(label);
+		pane.add(panel1);
+		pane.add(panel2);
+		pane.add(panel3);
+		setVisible(true);
 
 	}
-
-	// void addPlayerDetails(String s1, String s2){
-	// 	// System.out.println(s1);
-	// 	// System.out.println(s2);
-	// 	// panel.add(p1.getName());
-	// 	textArea = new JTextArea();
-	// 	textArea.append(s1);
-	// 	textArea.append(s2);
-	// 	panel.add(textArea);
-
-	// 	// pane.add(panel);
-
-	// }
 
 	void resetGame(){
 		currPlayer = "X";
@@ -110,6 +149,14 @@ public class GameLogic extends GameGUI{
 		for (int i = 0; i < 3; i++)
 			for(int j = 0; j < 3; j++)
 				board[i][j].setText("");
+		score = "<html>Scores<br>"+p1.getName()+"--"+p1.getScore()+"<br>"+p2.getName()+"--"+p2.getScore();
+		label.setText(score);
+	}
+	void resetScore(){
+		p1.setScore(0);
+		p2.setScore(0);
+		score = "<html>Scores<br>"+p1.getName()+"--"+p1.getScore()+"<br>"+p2.getName()+"--"+p2.getScore();
+		label.setText(score);
 	}
 	void quitGame(){
 		System.exit(0);
@@ -145,10 +192,20 @@ public class GameLogic extends GameGUI{
 			showDraw();
 	}
 	void showWinner(){
-		JOptionPane.showMessageDialog(null,  "Player "+ currPlayer + " has won.");
+		if(currPlayer.equals("X")){
+			JOptionPane.showMessageDialog(null, p1.getName() + " has won.");
+			p1.setScore(p1.getScore() + 1);
+			// System.out.println(p1.getScore());
+		}
+		else{
+			JOptionPane.showMessageDialog(null, p2.getName() + " has won.");
+			p2.setScore(p2.getScore() + 1);
+			// System.out.println(p2.getScore());
+		}
 		hasWinner = true;
 		resetGame();
 	}
+
 	void showDraw(){
 		JOptionPane.showMessageDialog(null,  "Its a DRAW");
 		resetGame();
