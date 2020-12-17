@@ -6,6 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.*;
 
 import java.awt.Container;
 import java.awt.GridLayout;
@@ -20,9 +21,12 @@ public class GameGUI extends JFrame{
 	JMenuBar menuBar;
 	JMenu menu;
 	JPanel panel;
-	JButton reset;
+	JButton resetBoard;
+	JButton resetScore;
 	JButton quit;
 	JTextArea textArea;
+	JPanel panel1,panel2,panel3;
+	JLabel label;
 
 	GameGUI(){
 		super();
@@ -32,8 +36,8 @@ public class GameGUI extends JFrame{
 		setSize(500,500);
 		// pane.setOpaque(true);
 		// setBackground(Color.black);
-		setResizable(false);
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setResizable(true);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
 		board = new JButton[3][3];
 	}
